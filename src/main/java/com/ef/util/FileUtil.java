@@ -24,14 +24,16 @@ public class FileUtil {
 
 	public static File getLogFileFromResourceFolder() {
 
-		return getLogFileFromPath(ACCESS_LOG_FILE_NAME);
+
+		//TODO: not working properly
+		ClassLoader classLoader = FileUtil.class.getClassLoader();
+		return new File(classLoader.getResource(ACCESS_LOG_FILE_NAME).getFile());
 
 	}
 
 	public static File getLogFileFromPath(String pathname) {
 
-		ClassLoader classLoader = FileUtil.class.getClassLoader();
-		return new File(classLoader.getResource(pathname).getFile());
+		return new File(pathname);
 
 	}
 }

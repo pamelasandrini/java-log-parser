@@ -1,9 +1,12 @@
 package com.ef;
 
-import java.io.File;
+import java.io.IOException;
+import java.security.InvalidParameterException;
 
-import com.ef.util.FileUtil;
-import com.google.common.base.Strings;
+import org.apache.commons.lang3.StringUtils;
+
+import com.ef.bo.ParserCriteriaBO;
+import com.ef.processor.ParserProcessor;
 
 /**
  * Main class for executing Parser program.
@@ -18,40 +21,29 @@ public class Parser {
 	private static final String DURATION_ARG = "duration";
 	private static final String THRESHOLD_ARG = "threshold";
 
+	private static ParserCriteriaBO criteria = new ParserCriteriaBO();
 	private static String accessLog;
-	private static String startDate;
-	private static String duration;
-	private static String threshold;
 
-	private static File logFile;
+	public static void main(String[] args) throws IOException {
 
-	public static void main(String[] args) {
+		System.out.println("Starting parser.");
 
-		getArguments(args);
+		getCommandArguments(args);
 
-		// if log file was passed then gets it from the path, otherwise gets it
-		// from the resource folder as default
+		System.out.println("start date: " + criteria.getStartDateFormatted());
+		System.out.println("final date: " + criteria.getfinalDate());
 
-		if (!Strings.isNullOrEmpty(accessLog) && FileUtil.fileExists(accessLog)) {
-
-			logFile = FileUtil.getLogFileFromPath(accessLog);
-
-		} else {
-
-			System.out.println("Could not determine access.log from command line. Using default access.log file");
-			logFile = FileUtil.getLogFileFromResourceFolder();
-
+		if (!criteria.isValidArgument()) {
+			throw new InvalidParameterException("missing parameter from command line.");
 		}
-		
-		// parse the log
-		
-		// save in DB
-		
-		// check the IP requests
+
+		new ParserProcessor(accessLog, criteria).processParse();
+
+		System.out.println("Parser finished.");
 
 	}
 
-	private static void getArguments(String[] args) {
+	private static void getCommandArguments(String[] args) {
 		for (String string : args) {
 
 			if (string.contains(ACCESS_LOG_ARG)) {
@@ -61,23 +53,23 @@ public class Parser {
 
 			if (string.contains(START_DATE_ARG)) {
 
-				startDate = extractValue(string);
+				criteria.setStartDate(extractValue(string));
 			}
 
 			if (string.contains(DURATION_ARG)) {
 
-				duration = extractValue(string);
+				criteria.setDuration(extractValue(string));
 			}
 
 			if (string.contains(THRESHOLD_ARG)) {
 
-				threshold = extractValue(string);
+				criteria.setThreshold(extractValue(string));
 			}
 		}
 	}
 
 	private static String extractValue(String string) {
-		if (Strings.isNullOrEmpty(string)) {
+		if (StringUtils.isBlank(string)) {
 			return null;
 		}
 
