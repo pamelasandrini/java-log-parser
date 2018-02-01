@@ -17,7 +17,7 @@ public class ParserCriteriaBO {
 	private String threshold;
 
 	public String getStartDate() {
-		return startDate;
+		return DateUtil.standardizeDateFormat(startDate);
 	}
 
 	public void setStartDate(String startDate) {
@@ -53,14 +53,7 @@ public class ParserCriteriaBO {
 	 * @return the finalDate as the log file format
 	 */
 	public String getfinalDate() {
-		return DateUtil.getfinalDate(startDate, duration);
+		return DateUtil.calculateFinalDate(startDate, duration);
 	}
 
-	/**
-	 * @return the startDate as the log file format
-	 */
-	public String getStartDateFormatted() {
-
-		return startDate.replace('.', ' ');
-	}
 }

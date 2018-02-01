@@ -1,7 +1,5 @@
 package com.ef.bo;
 
-import java.util.Date;
-
 /**
  * BO class representing a request in log file.
  * 
@@ -11,19 +9,18 @@ import java.util.Date;
 public class RequestBO {
 
 	private String ip;
-	private String stringDate;
+	private String date;
 	private String request;
 	private String status;
 	private String userAgent;
-	private Date date;
 
 	public RequestBO() {
 		super();
 	}
 
-	public RequestBO(String stringDate, String ip, String request, String status, String userAgent) {
+	public RequestBO(String date, String ip, String request, String status, String userAgent) {
 		this.ip = ip;
-		this.stringDate = stringDate;
+		this.date = date;
 		this.request = request;
 		this.status = status;
 		this.userAgent = userAgent;
@@ -37,12 +34,12 @@ public class RequestBO {
 		this.ip = ip;
 	}
 
-	public String getStringDate() {
-		return stringDate;
+	public String getDate() {
+		return date;
 	}
 
-	public void setStringDate(String date) {
-		this.stringDate = date;
+	public void setDate(String date) {
+		this.date = date;
 	}
 
 	public String getRequest() {
@@ -51,14 +48,6 @@ public class RequestBO {
 
 	public void setRequest(String request) {
 		this.request = request;
-	}
-
-	public Date getDate() {
-		return date;
-	}
-
-	public void setDate(Date date) {
-		this.date = date;
 	}
 
 	public String getStatus() {

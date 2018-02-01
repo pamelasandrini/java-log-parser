@@ -30,9 +30,6 @@ public class Parser {
 
 		getCommandArguments(args);
 
-		System.out.println("start date: " + criteria.getStartDateFormatted());
-		System.out.println("final date: " + criteria.getfinalDate());
-
 		if (!criteria.isValidArgument()) {
 			throw new InvalidParameterException("missing parameter from command line.");
 		}
