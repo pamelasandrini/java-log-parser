@@ -22,6 +22,13 @@ import com.ef.util.FileUtil;
 import com.google.common.base.Splitter;
 import com.google.common.base.Strings;
 
+/**
+ * Processor classe to parse the log delimited by pipe (|). Load all requests in
+ * DB. Load blocked ips in DB.
+ * 
+ * @author pborsoni
+ *
+ */
 public class ParserProcessor {
 
 	private File logFile;
@@ -48,14 +55,10 @@ public class ParserProcessor {
 		Path path = logFile.toPath();
 
 		// parse the log
-		Files.lines(path).forEach(line -> {
-
-			requestList.add(splitRequestFromLine(line));
-		});
+		Files.lines(path).forEach(line -> requestList.add(splitRequestFromLine(line)));
 
 		// store all request lines
-		RequestDao requestDao = new RequestDao();
-		requestDao.insert(requestList);
+		storeAllRequestLines(requestList);
 
 		// store blocked ips
 		Set<String> blockedIps = getBlockedIps(partialLog.toString(), ips);
@@ -63,7 +66,21 @@ public class ParserProcessor {
 
 	}
 
-	private void getIpsFromLineInDuration(String ip, String dateString, String line) {
+	private void storeAllRequestLines(List<RequestBO> requestList) {
+
+		RequestDao requestDao = new RequestDao();
+		requestDao.insert(requestList);
+
+	}
+
+	/**
+	 * Get ip if it is in the duration time.
+	 * 
+	 * @param ip
+	 * @param dateString
+	 * @param line
+	 */
+	private void getIpFromLineInDuration(String ip, String dateString, String line) {
 
 		LocalDateTime date = DateUtil.convertStringToLocalDateTime(dateString);
 		LocalDateTime startDate = DateUtil.convertStringToLocalDateTime(criteria.getStartDate());
@@ -83,7 +100,7 @@ public class ParserProcessor {
 		String date = itemsSplitted.get(DATE_SPLIT);
 		String ip = itemsSplitted.get(IP_SPLIT);
 
-		getIpsFromLineInDuration(ip, date, line);
+		getIpFromLineInDuration(ip, date, line);
 
 		return new RequestBO(date, ip, removeQuotes(itemsSplitted.get(REQUEST_SPLIT)), itemsSplitted.get(STATUS_SPLIT),
 				removeQuotes(itemsSplitted.get(USER_AGENT_SPLIT)));
@@ -95,12 +112,19 @@ public class ParserProcessor {
 
 		for (String ip : blockedIps) {
 
-			blockedIpDao.insert(ip, blockReason);
 			System.out.println("Blocked ip: " + ip);
+			blockedIpDao.insert(ip, blockReason);
 		}
 
 	}
 
+	/**
+	 * Check if an ip reached the threshold of requests
+	 * 
+	 * @param partialLog
+	 * @param ips
+	 * @return a set of blocked ips
+	 */
 	private Set<String> getBlockedIps(String partialLog, Set<String> ips) {
 
 		Set<String> blockedIps = new HashSet<>();
@@ -126,6 +150,12 @@ public class ParserProcessor {
 
 	}
 
+	/**
+	 * Load file from the accessLog if possible, otherwise use the default log.
+	 * 
+	 * @param accessLog
+	 * @return
+	 */
 	private File loadLogFile(String accessLog) {
 		if (!Strings.isNullOrEmpty(accessLog) && FileUtil.fileExists(accessLog)) {
 
