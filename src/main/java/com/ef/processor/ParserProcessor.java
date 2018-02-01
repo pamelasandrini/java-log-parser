@@ -68,7 +68,7 @@ public class ParserProcessor {
 		LocalDateTime date = DateUtil.convertStringToLocalDateTime(dateString);
 		LocalDateTime startDate = DateUtil.convertStringToLocalDateTime(criteria.getStartDate());
 		LocalDateTime finalDate = DateUtil.convertStringToLocalDateTime(criteria.getfinalDate());
-		
+
 		if (!(date.isBefore(startDate) || date.isAfter(finalDate))) {
 
 			partialLog.append(line);
@@ -96,18 +96,18 @@ public class ParserProcessor {
 		for (String ip : blockedIps) {
 
 			blockedIpDao.insert(ip, blockReason);
+			System.out.println("Blocked ip: " + ip);
 		}
+
 	}
 
 	private Set<String> getBlockedIps(String partialLog, Set<String> ips) {
 
 		Set<String> blockedIps = new HashSet<>();
-		BlockedIPDao blockedIpDao = new BlockedIPDao();
 
 		for (String ip : ips) {
-			if (StringUtils.countMatches(ip, partialLog) >= criteria.getThreshold()) {
+			if (StringUtils.countMatches(partialLog, ip) >= criteria.getThreshold()) {
 				blockedIps.add(ip);
-				blockedIpDao.insert(ip, blockReason);
 			}
 		}
 
